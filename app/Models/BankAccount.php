@@ -6,15 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 
 use App\Traits\UuidTrait as Uuids;
 
-class Category extends Model
+class BankAccount extends Model
 {
     use Uuids;
 
     protected $fillable = [
-        'name', 'description', 'category_icon'
+        'account_name', 'description', 'bank_id'
     ];
 
-    protected $hidden = [
-        'deleted_at'
-    ];
+    protected $hidden = [];
 }
