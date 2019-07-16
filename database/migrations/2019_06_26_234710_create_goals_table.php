@@ -15,7 +15,14 @@ class CreateGoalsTable extends Migration
     {
         Schema::create('goals', function (Blueprint $table) {
             $table->uuid('id')->index()->primary();
+            $table->string('title');
+            $table->text('description');
+            $table->date('due_date');
+            $table->uuid('user_id')->index();
             $table->timestamps();
+
+            $table->foreign('user_id')->references('id')->on('users');
+
         });
     }
 

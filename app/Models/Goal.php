@@ -11,7 +11,7 @@ class Goal extends Model
     use Uuids;
 
     protected $fillable = [
-        //
+        'title', 'description', 'due_date', 'user_id'
     ];
 
     protected $hidden = [];
