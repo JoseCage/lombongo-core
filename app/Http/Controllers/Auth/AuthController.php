@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Auth;
 use Auth;
 use App\Http\Controllers\Controller;
 
-use AppModels\User;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -37,7 +37,7 @@ class AuthController extends Controller
             'password' => Hash::make($request->name),
         ]);
 
-        if ($use['id']) {
+        if ($user['id']) {
             return response()->json([
                 'error' => 'This user already exist. Try to login please!',
             ], 401);
@@ -48,7 +48,7 @@ class AuthController extends Controller
         // Notify the User that his account is set
 
         // Generate the token after
-        $token = JWTAuth::attempt($request->only('email', 'pssword'));
+        $token = JWTAuth::attempt($request->only('email', 'password'));
 
         return response()->json([
             'access_token' => $token,
