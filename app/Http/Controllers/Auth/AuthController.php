@@ -29,39 +29,31 @@ class AuthController extends Controller
             ], 401);
         }
 
-        // Create the new User
-        $user = User::firstOrNew([
+        $user = User::create(
+            [
             'name' => $request->name,
             'email' => $request->email,
-            //'firebase_token' => $request->firebase_token,
-            'password' => Hash::make($request->name),
-        ]);
+            //'username' => $request->username,
+            'password' => Hash::make($request->password),
+            ]
+        );
 
-        if ($user['id']) {
-            return response()->json([
-                'error' => 'This user already exist. Try to login please!',
-            ], 401);
-        }
+        // Send mail to user
+        //Mail::to($user->email)->send(new UserCreated($user));
 
-        $user->save();
-
-        // Notify the User that his account is set
-
-        // Generate the token after
         $token = JWTAuth::attempt($request->only('email', 'password'));
 
-        return response()->json([
+        // all good so return the token
+        return response()->json(
+            [
             'access_token' => $token,
-            'token_type' => 'Bearer',
-            'user' => [
-                'name' => $user->name,
-                'email' => $user->email
-            ]
-        ], 201);
+            'token_type' => 'Bearer'
+            ], 201
+        );
     }
 
     // Login
-    public function login(Request $requst)
+    public function login(Request $request)
     {
         // Validate fields
 
@@ -70,36 +62,31 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        /**
-         * Test if user passed an email and return something
-         */
-
-        $credentials = $request->only('email', 'password');
-
-        // Work in JWT
-        $token = JWTAuth::attempt($credentials);
-
         try {
-            if (!$token) {
-                return response()->json([
-                    'error' => 'Invalid Credentials!',
-                ], 401);
+
+            // grab credentials from the request
+            // attempt to verify the credentials and create a token for the user
+            if (!$token = JWTAuth::attempt(
+                $request->only('email', 'password'), [
+                'exp' => \Carbon\Carbon::now()->addWeek()->timestamp,
+                ]
+            )
+            ) {
+                return response()->json([ 'error' => 'invalid_credentials' ], 401);
             }
-
-            return response()->json([
-                'access_token' => $token,
-                'token_type' => 'bearer',
-                'user' => [
-                    'name' => $user->name,
-                    'email' => $user->email
-                ],
-            ], 200);
-
         } catch (JWTException $e) {
-            return response()->json([
-                'error' => 'Could not create token!',
-            ], 500);
+            // something went wrong whilst attempting to encode the token
+            return response()->json([ 'error' => 'could_not_create_token' ], 500);
         }
+
+        // all good so return the token
+        return response()->json(
+            [
+            'access_token' => $token,
+            'token_type' => 'Bearer'
+            ], 200
+        );
+
     }
 
     public function getUser()
