@@ -13,14 +13,27 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
-Route::group(['prefix' => 'auth', 'namespace' => 'Auth'], function ($auth) {
+Route::group(['namespace' => 'Auth'], function ($auth) {
     $auth->post('/register', 'AuthController@register')->name('register');
     $auth->post('/login', 'AuthController@login')->name('login');
     $auth->middleware('auth.jwt')->patch('/me', 'AuthController@update')->name('user.update');
     $auth->middleware('auth.jwt')->get('/me', 'AuthController@getUser')->name('userinfo');
 
+});
+
+// Categories
+Route::group(['prefix' => 'categories', 'namespace' => 'API', 'middleware' => 'auth'], function($category) {
+  $category->get('/', 'CategoryController@index');
+  $category->post('/', 'CategoryController@createCategory');
+});
+// Banks
+Route::group(['prefix' => 'banks', 'namespace' => 'API', 'middleware' => 'auth'], function($category) {
+  $category->get('/', 'BankController@index');
+});
+
+// User routes
+Route::group(['prefix' => 'me', 'namespace' => 'API', 'middleware' => 'auth'], function($user) {
+  $user->group(['prefix' => 'accounts'], function($account) {
+    $account->get('/', 'BankAccountController@index')->name('me.accounts');
+  });
 });
