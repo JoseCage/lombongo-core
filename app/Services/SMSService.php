@@ -4,9 +4,9 @@ namespace App\Services;
 
 use WeSender\WeSenderSDK;
 
-class WeSenderService{
+class SMSService{
 
-    public function make($destines, $message, $specialChars)
+    public function send($destines, $message, $specialChars)
     {
         $wesender = new WeSenderSDK(config('wesender.api_key'));
 
