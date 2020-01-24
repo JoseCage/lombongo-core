@@ -24,7 +24,7 @@ Route::group(['namespace' => 'Auth'], function ($auth) {
 // Categories
 Route::group(['prefix' => 'categories', 'namespace' => 'API', 'middleware' => 'auth'], function($category) {
   $category->get('/', 'CategoryController@index');
-  $category->post('/', 'CategoryController@createCategory');
+  //$category->post('/', 'CategoryController@createCategory');
 });
 // Banks
 Route::group(['prefix' => 'banks', 'namespace' => 'API', 'middleware' => 'auth'], function($category) {
